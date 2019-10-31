@@ -1,0 +1,112 @@
+/* This file is currently associated to an HTML file of the same name and is drawing content from it.  Until the files are disassociated, you will not be able to move, delete, rename, or make any other changes to this file. */
+
+function DisplayTemplate_d16e8bf8748840608be580d1fb9b0393(ctx) {
+  var ms_outHtml=[];
+  var cachePreviousTemplateData = ctx['DisplayTemplateData'];
+  ctx['DisplayTemplateData'] = new Object();
+  DisplayTemplate_d16e8bf8748840608be580d1fb9b0393.DisplayTemplateData = ctx['DisplayTemplateData'];
+
+  ctx['DisplayTemplateData']['TemplateUrl']='~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_TopLinks.js';
+  ctx['DisplayTemplateData']['TemplateType']='Item';
+  ctx['DisplayTemplateData']['TargetControlType']=['Content Web Parts'];
+  this.DisplayTemplateData = ctx['DisplayTemplateData'];
+
+  ctx['DisplayTemplateData']['ManagedPropertyMapping']={'Picture URL':['PublishingImage', 'PictureURL', 'PictureThumbnailURL'], 'Link URL':['Path'], 'Line 1':['Title'], 'SBoxIsLanguageOWSBOOL':['SBoxIsLanguageOWSBOOL'], 'Line 3':[], 'SecondaryFileExtension':null, 'ContentTypeId':null, 'NavigateUrl':['SBoxHyperlink']};
+  var cachePreviousItemValuesFunction = ctx['ItemValues'];
+  ctx['ItemValues'] = function(slotOrPropName) {
+    return Srch.ValueInfo.getCachedCtxItemValue(ctx, slotOrPropName)
+};
+
+ms_outHtml.push('',''
+,''
+);
+
+        var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_picture3Lines_");
+
+        var linkURL = $getItemValue(ctx, "Link URL");
+        linkURL.overrideValueRenderer($urlHtmlEncode);
+
+        var line1 = $getItemValue(ctx, "Line 1");
+        var line2 = $getItemValue(ctx, "Line 2");
+        var line3 = $getItemValue(ctx, "Line 3");
+         var navigateUrl= $getItemValue(ctx, "NavigateUrl");
+         if(navigateUrl != null &&  navigateUrl != "")
+         {
+         navigateUrl=navigateUrl.value.split(',')[0];
+         }
+        var isLang = ctx.CurrentItem.SBoxIsLanguageOWSBOOL;
+        var pictureURL = $getItemValue(ctx, "Picture URL");
+        var pictureId = encodedId + "picture";
+        var pictureMarkup = Srch.ContentBySearch.getPictureMarkup(pictureURL, 100, 100, ctx.CurrentItem, "cbs-picture3LinesImg", line1, pictureId);
+
+        line1.overrideValueRenderer($contentLineText);
+        line2.overrideValueRenderer($contentLineText);
+        line3.overrideValueRenderer($contentLineText);
+
+        var containerId = encodedId + "container";
+        var pictureLinkId = encodedId + "pictureLink";
+        var pictureContainerId = encodedId + "pictureContainer";
+        var dataContainerId = encodedId + "dataContainer";
+        var line1LinkId = encodedId + "line1Link";
+        var line1Id = encodedId + "line1";
+        var line2Id = encodedId + "line2";
+        var line3Id = encodedId + "line3";
+
+        var dataDisplayTemplateTitle = "ItemPicture3Lines";
+        var lanClick ="getVariationLabelSourceUrl('"+navigateUrl+"');";
+         ms_outHtml.push(''
+);
+        if(isLang != 1)
+        {
+        ms_outHtml.push(''
+,''
+,'        <a class="cbs-pictureImgLink" href="', navigateUrl,'" id="', pictureLinkId ,'">'
+,'            ', line1 ,''
+);
+                if(navigateUrl && navigateUrl.toLowerCase().indexOf("arabic")>0)
+                {
+                ms_outHtml.push(''
+,'            <span class="sr-only">&#1506;&#1512;&#1489;&#1497;&#1514;</span>'
+);
+            }
+             ms_outHtml.push(''
+,'        </a>'
+);
+        }
+        else
+         {
+         ms_outHtml.push(''
+,'        <a class="cbs-pictureImgLink languagelink" data-url="', STSHtmlEncode(navigateUrl) ,'" href="', navigateUrl,'" id="', pictureLinkId ,'">'
+,'            ', line1,''
+,'        </a>'
+);
+        }
+        ms_outHtml.push(''
+,''
+,'    '
+);
+
+  ctx['ItemValues'] = cachePreviousItemValuesFunction;
+  ctx['DisplayTemplateData'] = cachePreviousTemplateData;
+  return ms_outHtml.join('');
+}
+function RegisterTemplate_d16e8bf8748840608be580d1fb9b0393() {
+
+if ("undefined" != typeof (Srch) &&"undefined" != typeof (Srch.U) &&typeof(Srch.U.registerRenderTemplateByName) == "function") {
+  Srch.U.registerRenderTemplateByName("Item_Picture3Lines", DisplayTemplate_d16e8bf8748840608be580d1fb9b0393);
+}
+
+if ("undefined" != typeof (Srch) &&"undefined" != typeof (Srch.U) &&typeof(Srch.U.registerRenderTemplateByName) == "function") {
+  Srch.U.registerRenderTemplateByName("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_TopLinks.js", DisplayTemplate_d16e8bf8748840608be580d1fb9b0393);
+}
+//
+        $includeLanguageScript("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_TopLinks.js", "~sitecollection/_catalogs/masterpage/Display Templates/Language Files/{Locale}/CustomStrings.js");
+        // $includeLanguageScript("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_TopLinks.js", "~sitecollection/_layouts/15/SolBox.MTA.UI/js/Mta.js");
+        //  $includeScript("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_TopLinks.js", "~sitecollection/_catalogs/masterpage/Display Templates/Content Web Parts/MyScripts.js");
+
+    //
+}
+RegisterTemplate_d16e8bf8748840608be580d1fb9b0393();
+if (typeof(RegisterModuleInit) == "function" && typeof(Srch.U.replaceUrlTokens) == "function") {
+  RegisterModuleInit(Srch.U.replaceUrlTokens("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_TopLinks.js"), RegisterTemplate_d16e8bf8748840608be580d1fb9b0393);
+}

@@ -1,0 +1,309 @@
+﻿var globalDestinyUrl = "";
+var globalVariationWebUrl = "";
+var pageItem; //variable for list item of page being displayed (which uses this page layout)
+
+var pageFieldNameVar = ''; //variable for page field to be retrieved
+
+var context; // This variable will contain SharePoint Client Context
+
+var rootWeb; // This variable will contain reference to root website of the site collection
+
+//sets all global variables to establish the root website context
+function setRootWebContext() {
+
+    //getting root web of the site collection as it is assumed pages
+    //will be stored in a library at root web level
+
+    context = SP.ClientContext.get_current();
+
+    var site = context.get_site();
+
+    rootWeb = site.get_rootWeb();
+
+}
+
+
+//sets the pageItem global variable to establish the context for current page
+function setPageContext() {
+
+    //_spPageContextInfo is defined in every SharePoint page and has pageListId and pageItemId
+    //properties populated in publishing pages
+    var pageListId = _spPageContextInfo.pageListId;
+    var pageItemId = _spPageContextInfo.pageItemId;
+
+    if (rootWeb == null)
+        setRootWebContext();
+
+    //getting the list item for the current page
+
+    var webLists = rootWeb.get_lists();
+
+    var pageList = webLists.getById(pageListId);
+
+    pageItem = pageList.getItemById(pageItemId);
+
+}
+
+
+//this function executes asynchronous request to get current page's field value
+function getPageField(pageFieldName) {
+
+    if (pageItem == null)
+        setPageContext();
+
+    //explicitly requesting to load the field Name for the page item
+    context.load(pageItem, pageFieldName);
+
+    //making the actual request
+    context.executeQueryAsync(Function.createDelegate(this, function () { onPageFieldSuccess(pageFieldName); }), Function.createDelegate(this, function () { onPageFieldFailed(pageFieldName); }));
+
+}
+
+
+//this function is called automatically when request made by getPageField function is successful
+function onPageFieldSuccess(pageFieldName) {
+    //retreiving the page field value from page list item
+    var fieldVal = pageItem.get_item(pageFieldName);
+
+    //use fieldVal below to do something
+}
+
+//this function is called automatically when request made by getPageField function is unsuccessful
+function onPageFieldFailed(pageFieldNameVar) {
+    //do something to display error
+}
+
+
+
+
+
+function urlExists(url, callback) {
+    $.ajax({
+        type: 'HEAD',
+        url: url,
+        success: function () {
+            callback(true);
+        },
+        error: function () {
+            callback(false);
+        }
+    });
+}
+
+function getVaritationLabels(OnSuccess, OnError) {
+    var ctx = SP.ClientContext.get_current();
+    var rootWeb = ctx.get_site().get_rootWeb();
+    var webProperties = rootWeb.get_allProperties();
+    ctx.load(rootWeb);
+    ctx.load(webProperties);
+    ctx.executeQueryAsync(
+      function () {
+          var varLabelsListId = webProperties.get_item('_VarLabelsListId');
+
+          var labelsList = rootWeb.get_lists().getById(varLabelsListId);
+          var labelItems = labelsList.getItems(SP.CamlQuery.createAllItemsQuery());
+
+          ctx.load(labelItems);
+          ctx.executeQueryAsync(
+             function () {
+                 var variationLabels = [];
+
+                 var e = labelItems.getEnumerator();
+                 while (e.moveNext()) {
+                     var labelItem = e.get_current();
+                     variationLabels.push({
+                         'IsSource': labelItem.get_item('Is_x0020_Source'),
+                         'Language': labelItem.get_item('Language'),
+                         'Locale': labelItem.get_item('Locale'),
+                         'Title': labelItem.get_item('Title'),
+                         'TopWebUrl': labelItem.get_item('Top_x0020_Web_x0020_URL')
+                     });
+                 }
+
+                 OnSuccess(variationLabels);
+             },
+             OnError
+          );
+
+      },
+      OnError
+    );
+}
+
+
+
+function onPopUpCloseCallBack(dialogResult, returnValue) {
+    // Depending on what data you get in your 'result' param
+    // your logic to open the new dialog goes here.
+    var options = SP.UI.$create_DialogOptions();
+    options.width = 500;
+    options.height = 250;
+    options.url = dialogResult;
+    SP.UI.ModalDialog.showModalDialog(options);
+}
+
+function CloseChildDialog() {
+    //SP.UI.ModalDialog.commonModalDialogClose(SP.UI.DialogResult.OK, 'Closed with OK result');
+    SP.UI.ModalDialog.commonModalDialogClose(SP.UI.DialogResult.cancel, 'Cancelled');
+}
+
+function openInDialog(dlgWidth, dlgHeight, dlgAllowMaximize, dlgShowClose, pageUrl) {
+    var options = {
+        width: dlgWidth, height: dlgHeight, allowMaxize: dlgAllowMaximize,
+        showClose: dlgShowClose, url: pageUrl, dialogReturnValueCallback: onPopUpCloseCallBack
+    };
+   
+   // SP.UI.ModalDialog.showModalDialog(options);
+    SP.SOD.execute('sp.ui.dialog.js', 'SP.UI.ModalDialog.showModalDialog',options);
+}
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function goToVarHomePage()
+{
+    var destUrl = getParameterByName("destUrl");
+    if(destUrl != '')
+    {
+        window.parent.location .href = destUrl;
+    }
+    window.frameElement.commitPopup()
+}
+
+function goToReportMissingPage() {
+    var destUrl = getParameterByName("destUrl");
+    if (destUrl != '') {
+        window.parent.location.href = destUrl;
+    }
+    window.frameElement.commitPopup()
+}
+
+function getVariationLabelSourceUrl(UrlParam) {
+    pageFieldNameVar = "Title";
+    getPageField(pageFieldNameVar);
+    var destinyUrl = '';
+  
+    var curentVarWeb = '';
+    var destinyVarWeb = '';
+    getVaritationLabels(
+      function (variationLabels) {
+          var currentUrl = _spPageContextInfo.siteAbsoluteUrl.toString() + _spPageContextInfo.serverRequestPath.toString();// _spPageContextInfo.webAbsoluteUrl;
+          for (var j = 0; j < variationLabels.length; j++) {
+              var variationLabel = variationLabels[j];
+              if (variationLabel.TopWebUrl != null) {
+                  if (currentUrl.indexOf(variationLabel.TopWebUrl.get_url()) > -1) {
+                      curentVarWeb = variationLabel.TopWebUrl.get_url();
+                  }
+                  if (UrlParam.indexOf(variationLabel.TopWebUrl.get_url()) > -1) {
+                      destinyVarWeb = variationLabel.TopWebUrl.get_url();
+                      globalVariationWebUrl = destinyVarWeb;
+                  }
+              }
+          }
+          //alert(UrlParam);
+          //alert(curentVarWeb);
+          destinyUrl = currentUrl.replace(curentVarWeb, destinyVarWeb);
+          // console.log('Variation Label Source Url: ' + sourceUrl);
+          urlExists(destinyUrl, function (exists) {
+              if (exists) {
+                  globalDestinyUrl = destinyUrl;
+                 // window.location.href = destinyUrl;
+              }
+              else {
+                 // openInDialog(400, 300, true, true, "/_layouts/15/SolBox/MTA/MissingPage.aspx?IsDlg=1&destUrl=" + destinyVarWeb);
+              }
+              //alert(exists);
+              //do more stuff based on the boolean value of exists
+          });
+
+
+      },
+      function (sender, args) {
+          console.log('An error occurred: ' + args.get_message());
+      }
+    );
+}
+
+$(document).ready(function () {
+    //SP.SOD.executeFunc('sp.js', 'SP.ClientContext', getLanguageLink);
+    //if (!is_desktop)
+    //{
+       
+    //    SP.SOD.executeFunc('sp.js', 'SP.ClientContext', getMobileLanguageLink);
+    //}
+});
+//function getMobileLanguageLink() {
+
+//    getVariationLabelSourceUrl("/he-il");
+//}
+
+function getLanguageLink() {
+    SP.SOD.executeFunc('sp.js', 'SP.ClientContext', getLanguageLink1);
+
+}
+
+function getLanguageLink1() {
+    var destinyUrl = '';
+    var curentVarWeb = curVarTopLinksUrl;
+    var destinyVarWeb = $(".languagelink").attr("data-url");
+    var currentUrl = _spPageContextInfo.siteAbsoluteUrl.toString() + _spPageContextInfo.serverRequestPath.toString();
+    globalVariationWebUrl = destinyVarWeb;
+    destinyUrl = currentUrl.replace(curentVarWeb, destinyVarWeb);
+    // console.log('Variation Label Source Url: ' + sourceUrl);
+
+    $.ajax({
+        url: "/_layouts/15/SolBox/MTA/PageExist.ashx?url2check=" + escape(destinyUrl),
+        type: "GET",
+        contentType: "application/json; charset=utf-8",
+        success: function (data) {
+            if (data != null && data.length > 0) {
+                globalDestinyUrl = destinyUrl;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+          //  alert("ERROR");
+            //clearData();
+        }
+    });
+
+    //urlExists(destinyUrl, function (exists) {
+    //    if (exists) {
+    //        globalDestinyUrl = destinyUrl;
+    //        // window.location.href = destinyUrl;
+    //    }
+    //    else {
+    //        // openInDialog(400, 300, true, true, "/_layouts/15/SolBox/MTA/MissingPage.aspx?IsDlg=1&destUrl=" + destinyVarWeb);
+    //    }
+    //    //alert(exists);
+    //    //do more stuff based on the boolean value of exists
+    //});
+    //getVariationLabelSourceUrl($(".languagelink").attr("data-url"));
+}
+
+function RedirectToVariationPageIfExist()
+{
+    if (globalDestinyUrl != null && globalDestinyUrl.value != "" && globalDestinyUrl.length > 0) {
+       // globalDestinyUrl = destinyUrl;
+        window.location.href = globalDestinyUrl;
+    }
+    else {
+        openInDialog(400, 300, true, true,globalVariationWebUrl+ "/Pages/MissingPage.aspx?IsDlg=1&destUrl=" + globalVariationWebUrl);
+    }
+}
+function MobileRedirectToVariationPageIfExist() {
+    if (globalDestinyUrl != null && globalDestinyUrl.value != "" && globalDestinyUrl.length > 0) {
+        // globalDestinyUrl = destinyUrl;
+        window.location.href = globalDestinyUrl;
+    }
+    else {
+        window.location.href = globalVariationWebUrl;
+      
+    }
+}
+
+
+
+

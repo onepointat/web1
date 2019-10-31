@@ -1,0 +1,137 @@
+/* This file is currently associated to an HTML file of the same name and is drawing content from it.  Until the files are disassociated, you will not be able to move, delete, rename, or make any other changes to this file. */
+
+function DisplayTemplate_2d3fb482e95b41388109b7f4246f377f(ctx) {
+  var ms_outHtml=[];
+  var cachePreviousTemplateData = ctx['DisplayTemplateData'];
+  ctx['DisplayTemplateData'] = new Object();
+  DisplayTemplate_2d3fb482e95b41388109b7f4246f377f.DisplayTemplateData = ctx['DisplayTemplateData'];
+
+  ctx['DisplayTemplateData']['TemplateUrl']='~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_PromotionsInner.js';
+  ctx['DisplayTemplateData']['TemplateType']='Item';
+  ctx['DisplayTemplateData']['TargetControlType']=['Content Web Parts'];
+  this.DisplayTemplateData = ctx['DisplayTemplateData'];
+
+  ctx['DisplayTemplateData']['ManagedPropertyMapping']={'Title':null, 'SBoxAbstract':null, 'SBoxImage':null, 'SBoxHyperlink':null, 'SBoxVideoLink':null, 'SBoxMainSitePromotion':null, 'SBoxOpenInNewWindow':null};
+  var cachePreviousItemValuesFunction = ctx['ItemValues'];
+  ctx['ItemValues'] = function(slotOrPropName) {
+    return Srch.ValueInfo.getCachedCtxItemValue(ctx, slotOrPropName)
+};
+
+ms_outHtml.push('',''
+,''
+);
+
+       var Title = $getItemValue(ctx, "Title");
+        var Abstract = $getItemValue(ctx, "SBoxAbstract");
+        var Video = $getItemValue(ctx, "SBoxVideoLink");
+        var Link = $getItemValue(ctx, "SBoxHyperlink");
+        if(Link != null &&  Link != "")
+        {
+            Link=Link.value.split(',')[0];
+        }
+        var Images = ctx.CurrentItem.SBoxImage;
+
+        var OpenNewWindow=$getItemValue(ctx, "SBoxOpenInNewWindow");
+       
+         ms_outHtml.push(''
+,'        '
+);
+       if(Video =="")
+       {
+       ms_outHtml.push(''
+,'            <article class="promo_inner">'
+);
+                if(OpenNewWindow =="true")
+                {
+                ms_outHtml.push(''
+,''
+,'                <a href="', Link ,'" target="_blank">'
+,'                    <h2>', Title ,'</h2>'
+,'                    <p>', Abstract ,'</p>'
+,'                    <figure>', Images ,'</figure>'
+,'                </a>'
+);
+                }
+                else
+                {
+                ms_outHtml.push(''
+,''
+,'                <a href="', Link ,'">'
+,'                    <h2>', Title ,'</h2>'
+,'                    <p>', Abstract ,'</p>'
+,'                    <figure>', Images ,'</figure>'
+,'                </a>'
+);
+                }
+                ms_outHtml.push(''
+,''
+,'            </article>'
+);
+        }
+    ms_outHtml.push(''
+);
+    if(Video !="")
+    {
+    ms_outHtml.push(''
+,''
+,'        <article>'
+);
+       if(OpenNewWindow =="true")
+       {
+       ms_outHtml.push(''
+,''
+,'            <a href="', Video ,'" class="popup-youtube" target="_blank">'
+,'                <h2>', Title ,'</h2>'
+,'                <p>', Abstract ,'</p>'
+,'                <figure>', Images ,'</figure>'
+,'                <h3>', Title ,'</h3>'
+,'            </a>'
+);
+        }
+        else
+        {
+        ms_outHtml.push(''
+,'            <a href="', Video ,'" class="popup-youtube">'
+,'                <h2>', Title ,'</h2>'
+,'                <p>', Abstract ,'</p>'
+,'                <figure>', Images ,'</figure>'
+,'                <h3>', Title ,'</h3>'
+,'            </a>'
+,''
+);
+        }
+    ms_outHtml.push(''
+,''
+,'        </article>'
+,''
+);
+        }
+    ms_outHtml.push(''
+,''
+,'    '
+);
+
+  ctx['ItemValues'] = cachePreviousItemValuesFunction;
+  ctx['DisplayTemplateData'] = cachePreviousTemplateData;
+  return ms_outHtml.join('');
+}
+function RegisterTemplate_2d3fb482e95b41388109b7f4246f377f() {
+
+if ("undefined" != typeof (Srch) &&"undefined" != typeof (Srch.U) &&typeof(Srch.U.registerRenderTemplateByName) == "function") {
+  Srch.U.registerRenderTemplateByName("Item_Picture3Lines", DisplayTemplate_2d3fb482e95b41388109b7f4246f377f);
+}
+
+if ("undefined" != typeof (Srch) &&"undefined" != typeof (Srch.U) &&typeof(Srch.U.registerRenderTemplateByName) == "function") {
+  Srch.U.registerRenderTemplateByName("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_PromotionsInner.js", DisplayTemplate_2d3fb482e95b41388109b7f4246f377f);
+}
+//
+        $includeLanguageScript("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_PromotionsInner.js", "~sitecollection/_catalogs/masterpage/Display Templates/Language Files/{Locale}/CustomStrings.js");
+       // $includeLanguageScript("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_PromotionsInner.js", "~sitecollection/_layouts/15/SolBox.MTA.UI/js/Mta.js");
+      //  $includeScript("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_PromotionsInner.js", "~sitecollection/_catalogs/masterpage/Display Templates/Content Web Parts/MyScripts.js");
+
+    //
+}
+RegisterTemplate_2d3fb482e95b41388109b7f4246f377f();
+if (typeof(RegisterModuleInit) == "function" && typeof(Srch.U.replaceUrlTokens) == "function") {
+  RegisterModuleInit(Srch.U.replaceUrlTokens("~sitecollection\u002f_catalogs\u002fmasterpage\u002fDisplay Templates\u002fContent Web Parts\u002fItem_PromotionsInner.js"), RegisterTemplate_2d3fb482e95b41388109b7f4246f377f);
+}
